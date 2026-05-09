@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HD현대 Innovation Workshop</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg: #f8fafc;
+  --s1: #ffffff;
+  --s2: #f1f5f9;
+  --s3: #e2e8f0;
+  --border: #cbd5e1;
+  --border2: #94a3b8;
+  --hd-navy: #003087;
+  --hd-blue: #0066cc;
+  --hd-sky: #00a3e0;
+  --accent: #0066cc;
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.08);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.08);
+  --amber: #f59e0b;
+  --text: #0f172a;
+  --text2: #334155;
+  --text3: #64748b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(0,102,204,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 100% 100%, rgba(0,163,224,0.03) 0%, transparent 50%);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── API KEY OVERLAY ── */
+.apikey-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(14px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.apikey-overlay.hidden { display: none; }
+.apikey-modal {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 18px; padding: 32px 28px; max-width: 440px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 0 40px rgba(0,102,204,0.05);
+}
+.apikey-brand {
+  font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 5px;
+  color: var(--hd-blue); margin-bottom: 16px;
+}
+.apikey-modal h2 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px;
+  color: var(--text); margin-bottom: 8px;
+}
+.apikey-modal p { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 16px; }
+.apikey-notice {
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  border-radius: 8px; padding: 11px 13px; font-size: 12px; color: #166534;
+  line-height: 1.6; margin-bottom: 16px;
+}
+.apikey-notice strong { color: #15803d; }
+.apikey-input-row { position: relative; margin-bottom: 8px; }
+.apikey-input-row input {
+  width: 100%; background: var(--s1); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 11px 42px 11px 13px; color: var(--text);
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; outline: none;
+  transition: border-color .2s;
+}
+.apikey-input-row input:focus { border-color: var(--hd-blue); box-shadow: 0 0 0 3px rgba(0,102,204,0.1); }
+.apikey-input-row input::placeholder { color: var(--border2); font-family: 'Noto Sans KR', sans-serif; font-size: 12px; }
+.apikey-toggle {
+  position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text3); font-size: 15px; cursor: pointer; padding: 4px;
+}
+.apikey-save-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  font-size: 12px; color: var(--text2);
+}
+.apikey-save-row input[type=checkbox] { accent-color: var(--hd-sky); width: 14px; height: 14px; cursor: pointer; }
+.apikey-err { font-size: 12px; color: #ef4444; margin-bottom: 10px; display: none; }
+.apikey-err.on { display: block; }
+.apikey-submit {
+  width: 100%; padding: 12px;
+  background: linear-gradient(135deg, var(--hd-navy), var(--hd-blue));
+  color: #fff; border: none; border-radius: 9px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 3px;
+  cursor: pointer; transition: all .2s;
+  box-shadow: 0 4px 12px rgba(0,102,204,0.25);
+}
+.apikey-submit:hover { opacity: .9; transform: translateY(-1px); }
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--s3);
+  padding: 0 32px;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+.brand {
+  font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:5px;
+  color: var(--hd-navy);
+}
+.btn-apikey {
+  background: none; border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 10px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--text3); cursor: pointer; transition: all .2s;
+}
+.btn-apikey:hover { border-color: var(--hd-sky); color: var(--hd-sky); }
+
+.step-nav { display:flex; gap:0; align-items:center; }
+.sn-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+  color: var(--text3); cursor: pointer; border-radius: 6px;
+  transition: all .2s; letter-spacing: 1px;
+  border: 1px solid transparent;
+  user-select: none;
+}
+.sn-item:hover:not(.active):not(.locked) { color: var(--text2); background: var(--s2); }
+.sn-item.active { color: var(--hd-blue); background: rgba(0,102,204,0.08); border-color: rgba(0,102,204,0.2); }
+.sn-item.done { color: var(--hd-sky); }
+.sn-item.locked { cursor: default; opacity: 0.4; }
+.sn-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--border2); transition: background .3s;
+}
+.sn-item.active .sn-dot { background: var(--hd-blue); box-shadow: 0 0 6px rgba(0,102,204,0.4); }
+.sn-item.done .sn-dot { background: var(--hd-sky); }
+.sn-sep { width: 16px; height: 1px; background: var(--border); }
+
+/* ── WRAP ── */
+.wrap { max-width: 860px; margin: 0 auto; padding: 44px 24px 120px; }
+
+/* ── STEP PANEL ── */
+.step-panel { display: none; animation: fadeIn .35s ease; }
+.step-panel.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── PROGRESS ── */
+.prog-bar { height: 3px; background: var(--s3); border-radius: 3px; margin-bottom: 36px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--hd-navy), var(--hd-sky)); border-radius: 3px; transition: width .6s ease; }
+
+/* ── STEP HEAD ── */
+.step-head { margin-bottom: 32px; }
+.step-eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 4px;
+  color: var(--hd-blue); text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px; font-weight: 600;
+}
+.step-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--hd-sky); }
+.step-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 1px; line-height: 1.1; margin-bottom: 10px; color: var(--hd-navy); }
+.step-sub { font-size: 13px; color: var(--text2); line-height: 1.8; max-width: 600px; }
+.timer-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 3px 12px; font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text3); margin-bottom: 12px; background: #fff;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px; margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+.card-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--hd-blue); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px; font-weight: 600;
+}
+
+/* ── FORM ── */
+.field { margin-bottom: 18px; }
+.f-label { font-size: 13px; color: var(--text); margin-bottom: 8px; font-weight: 600; display: flex; align-items: flex-start; gap: 8px; }
+.f-num { background: var(--hd-sky); color: #fff; border-radius: 4px; width: 20px; height: 20px; min-width: 20px; display: inline-flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: bold; }
+.f-hint { font-size: 11px; color: var(--text3); margin-top: 6px; line-height: 1.5; }
+input[type=text], textarea {
+  width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif; font-size: 13px; outline: none; resize: vertical; transition: all .2s;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+}
+input[type=text]:focus, textarea:focus { border-color: var(--hd-blue); box-shadow: 0 0 0 3px rgba(0,102,204,0.1); }
+input::placeholder, textarea::placeholder { color: var(--border2); font-size: 12px; }
+textarea { min-height: 80px; }
+
+/* ── BUTTONS ── */
+.btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--hd-navy), var(--hd-blue)); color: #fff; border: none; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; cursor: pointer; transition: all .2s; box-shadow: 0 4px 12px rgba(0,102,204,0.2); }
+.btn-primary:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,102,204,0.3); }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-next { flex: 1; padding: 14px; background: linear-gradient(135deg, #004fa3, var(--hd-sky)); color: #fff; border: none; border-radius: 10px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; cursor: pointer; transition: all .2s; box-shadow: 0 4px 12px rgba(0,163,224,0.2); }
+.btn-next:hover { opacity: .9; box-shadow: 0 6px 16px rgba(0,163,224,0.3); }
+.btn-next:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+.btn-ghost { padding: 10px 20px; background: #fff; border: 1px solid var(--border); color: var(--text2); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1px; font-weight:600; cursor: pointer; transition: all .2s; }
+.btn-ghost:hover { border-color: var(--hd-sky); color: var(--hd-sky); background: #f0f9ff; }
+
+/* ── LOADER & ERR ── */
+.loader-wrap { text-align: center; padding: 60px 20px; display: none; }
+.loader-wrap.on { display: block; }
+.spinner { width: 42px; height: 42px; border: 3px solid var(--s3); border-top-color: var(--hd-sky); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-msg { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text2); letter-spacing: 1px; font-weight: 600; }
+.err-bar { display: none; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #dc2626; margin-top: 10px; }
+.err-bar.on { display: block; }
+.result-wrap { display: none; }
+.result-wrap.on { display: block; }
+
+/* ── STEP2: LOOP CARDS ── */
+.loop-card { border-radius: 12px; border: 2px solid var(--border); background: #fff; margin-bottom: 16px; cursor: pointer; transition: all .2s; overflow: hidden; animation: fadeUp .4s ease both; position: relative; }
+.loop-card:nth-child(2) { animation-delay: .07s; }
+.loop-card:nth-child(3) { animation-delay: .14s; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.loop-card:hover { border-color: var(--hd-sky); box-shadow: 0 6px 20px rgba(0,0,0,0.06); transform: translateY(-2px); }
+.loop-card.selected { border-color: var(--hd-blue); box-shadow: 0 0 0 1px var(--hd-blue), 0 8px 24px rgba(0,102,204,0.12); }
+.loop-card.r-type { --lc: #ef4444; --lc-bg: #fef2f2; }
+.loop-card.b-type { --lc: #0ea5e9; --lc-bg: #f0f9ff; }
+
+.lc-hdr { padding: 14px 20px; background: var(--lc-bg); display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--border); }
+.lc-badge { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 2px; padding: 2px 10px; border-radius: 4px; background: var(--lc); color: #fff; }
+.lc-title { font-weight: 700; font-size: 14px; color: var(--text); flex: 1; }
+.lc-cat { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 1px; font-weight: 600; }
+.lc-sel-ring { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border2); background: #fff; transition: all .2s; flex-shrink: 0; }
+.loop-card.selected .lc-sel-ring { background: var(--hd-blue); border-color: var(--hd-blue); box-shadow: inset 0 0 0 3px #fff; }
+
+.lc-body { padding: 18px 20px; }
+.lc-chain { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 14px; }
+.lc-node { background: var(--s2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; }
+.loop-card.r-type .lc-node { border-color: #fca5a5; background: #fff; }
+.loop-card.b-type .lc-node { border-color: #7dd3fc; background: #fff; }
+.lc-arr { display: flex; flex-direction: column; align-items: center; min-width: 32px; padding: 0 2px; }
+.lc-arr-line { height: 2px; width: 100%; background: var(--lc); }
+.lc-arr-sign { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: var(--lc); margin-top: 2px; }
+.lc-interp { font-size: 13px; color: var(--text2); line-height: 1.6; border-top: 1px dashed var(--border); padding-top: 14px; }
+
+/* ── STEP3: REFRAME CARDS ── */
+.rf-card { border-radius: 12px; border: 2px solid var(--border); background: #fff; margin-bottom: 16px; cursor: pointer; transition: all .2s; overflow: hidden; animation: fadeUp .4s ease both; }
+.rf-card:nth-child(2) { animation-delay: .07s; }
+.rf-card:nth-child(3) { animation-delay: .14s; }
+.rf-card:hover { border-color: var(--hd-sky); box-shadow: 0 6px 20px rgba(0,0,0,0.06); transform: translateY(-2px); }
+.rf-card.selected { border-color: var(--hd-blue); box-shadow: 0 0 0 1px var(--hd-blue), 0 8px 24px rgba(0,102,204,0.12); }
+.rf-hdr { padding: 14px 20px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
+.rf-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--border2); line-height: 1; }
+.rf-title { font-size: 15px; font-weight: 700; color: var(--hd-navy); flex: 1; }
+.rf-sel-ring { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border2); background: #fff; transition: all .2s; flex-shrink: 0; }
+.rf-card.selected .rf-sel-ring { background: var(--hd-blue); border-color: var(--hd-blue); box-shadow: inset 0 0 0 3px #fff; }
+.rf-body { padding: 18px 20px; }
+.rf-assumption { font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.6; background: #f1f5f9; padding: 10px 12px; border-radius: 6px; }
+.rf-assumption strong { color: var(--text); }
+.rf-def { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; font-size: 14px; font-weight: 700; color: #1e3a8a; line-height: 1.6; margin-bottom: 12px; }
+.rf-hmw { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 12px 14px; font-size: 13px; color: #166534; font-weight: 600; line-height: 1.6; margin-bottom: 12px; }
+.rf-hmw span { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; display: block; margin-bottom: 6px; color: #15803d; font-weight: 700; }
+.rf-why { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+/* ── STEP4: AS-IS vs TO-BE ── */
+.s4-badge { display: flex; align-items: flex-start; gap: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 24px; font-size: 14px; color: var(--text); line-height: 1.6; }
+.s4-badge-icon { font-size: 18px; flex-shrink: 0; }
+.s4-badge strong { color: var(--hd-blue); display: block; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; }
+
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+@media(max-width:600px) { .compare-grid { grid-template-columns: 1fr; } }
+.compare-col { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); animation: fadeUp .4s ease both; background: #fff; }
+.compare-col.asis { border-color: #fca5a5; box-shadow: 0 4px 12px rgba(239,68,68,0.05); }
+.compare-col.tobe { border-color: #86efac; animation-delay: .1s; box-shadow: 0 4px 12px rgba(34,197,94,0.05); }
+.compare-hdr { padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+.compare-col.asis .compare-hdr { background: #fef2f2; border-bottom: 1px solid #fecaca; }
+.compare-col.tobe .compare-hdr { background: #f0fdf4; border-bottom: 1px solid #bbf7d0; }
+.compare-hdr-label { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; padding: 2px 8px; border-radius: 4px; }
+.asis .compare-hdr-label { background: var(--red); color: #fff; }
+.tobe .compare-hdr-label { background: var(--green); color: #fff; }
+.compare-hdr-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.compare-body { padding: 16px; }
+.compare-item { font-size: 13px; line-height: 1.6; color: var(--text2); padding: 10px 0; border-bottom: 1px dashed var(--border); }
+.compare-item:last-child { border-bottom: none; padding-bottom: 0; }
+.compare-item-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
+.asis .compare-item-label { color: #dc2626; }
+.tobe .compare-item-label { color: #166534; }
+
+.loop-compare-table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px var(--border); }
+.loop-compare-table th { padding: 12px 14px; background: #f8fafc; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--hd-navy); font-weight: 700; text-align: left; }
+.loop-compare-table th:last-child { border-right: none; }
+.loop-compare-table td { padding: 14px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text2); }
+.loop-compare-table td:last-child { border-right: none; }
+.loop-compare-table tr:last-child td { border-bottom: none; }
+.loop-compare-table tr:hover td { background: #f8fafc; }
+.loop-compare-table td strong { color: var(--text); }
+.loop-compare-table td.tobe-col { color: #15803d; font-weight: 500; }
+.loop-compare-table td.failed-col { color: #94a3b8; }
+
+.lp-card { border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 14px; animation: fadeUp .4s ease both; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.lp-card:nth-child(2) { animation-delay: .08s; }
+.lp-card:nth-child(3) { animation-delay: .16s; }
+.lp-hdr { padding: 14px 18px; display: flex; align-items: center; gap: 12px; background: #f0f9ff; border-bottom: 1px solid #bae6fd; }
+.lp-icon { font-size: 18px; }
+.lp-type { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--hd-blue); display: block; margin-bottom: 4px; font-weight: 600; }
+.lp-title { font-size: 14px; font-weight: 700; color: var(--hd-navy); }
+.lp-body { padding: 16px 18px; }
+.lp-method { font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 14px; }
+.lp-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.lp-meta-item { background: #f1f5f9; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text2); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.lp-side { display: flex; gap: 10px; background: #fff1f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #be123c; line-height: 1.6; }
+
+.divider { border: none; border-top: 1px dashed var(--border2); margin: 30px 0; }
+.row-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+/* ── CAUSAL LOOP DIAGRAM ── */
+.cld-section { margin-bottom: 24px; background: #fff; padding: 24px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+.cld-row-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; font-weight: 700; }
+.cld-row-label.asis-label { color: #dc2626; }
+.cld-row-label.tobe-label { color: #166534; }
+.cld-row-label::before, .cld-row-label::after { content:''; flex:1; height:1px; }
+.cld-row-label.asis-label::before, .cld-row-label.asis-label::after { background: #fca5a5; }
+.cld-row-label.tobe-label::before, .cld-row-label.tobe-label::after { background: #86efac; }
+
+/* TO-BE 루프 설명 카드 */
+.tobe-loop-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.tobe-loop-legend-item { display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 12px; color: var(--text2); }
+.tobe-loop-legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.tobe-loop-legend-dot.r-dot { background: #4ade80; }
+.tobe-loop-legend-dot.b-dot { background: #34d399; }
+.tobe-loop-legend-dot.p-dot { background: #fbbf24; }
+
+.cld-loops-row { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; padding: 24px 16px; border-radius: 12px; margin-bottom: 12px; }
+.cld-loops-row.asis-row { background: #fef2f2; border: 1px dashed #fca5a5; }
+.cld-loops-row.tobe-row { background: #f0fdf4; border: 1px dashed #86efac; }
+
+.cld-diagram { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.cld-diagram-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; text-align: center; max-width: 160px; line-height: 1.5; font-weight: 700; }
+.cld-diagram-title.r-color { color: #dc2626; }
+.cld-diagram-title.b-color { color: #0284c7; }
+.cld-diagram-title.tobe-r-color { color: #166534; }
+.cld-diagram-title.tobe-b-color { color: #065f46; }
+.cld-diagram-title.tobe-p-color { color: #b45309; }
+
+.cld-svg-wrap { position: relative; width: 180px; height: 180px; }
+.cld-svg-wrap svg { width: 100%; height: 100%; overflow: visible; }
+.cld-center-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 16px; z-index: 2; pointer-events: none; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.cld-center-badge.r-badge { color: #ef4444; border: 2px solid #ef4444; }
+.cld-center-badge.b-badge { color: #0ea5e9; border: 2px solid #0ea5e9; }
+.cld-center-badge.tobe-r-badge { color: #22c55e; border: 2px solid #22c55e; }
+.cld-center-badge.tobe-b-badge { color: #10b981; border: 2px solid #10b981; }
+.cld-center-badge.tobe-p-badge { color: #f59e0b; border: 2px solid #f59e0b; }
+
+.cld-node-el { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; text-align: center; line-height: 1.2; padding: 6px; z-index: 3; transition: all 0.3s; cursor: default; width: 56px; height: 56px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.cld-node-el.r-node { background: #fff; border: 3px solid #ef4444; color: #b91c1c; }
+.cld-node-el.b-node { background: #fff; border: 3px solid #0ea5e9; color: #0369a1; }
+.cld-node-el.tobe-r-node { background: #fff; border: 3px solid #22c55e; color: #15803d; }
+.cld-node-el.tobe-b-node { background: #fff; border: 3px solid #10b981; color: #047857; }
+.cld-node-el.tobe-p-node { background: #fff; border: 3px solid #f59e0b; color: #b45309; }
+
+/* TO-BE 루프 타입 설명 배지 */
+.loop-type-explain {
+  display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0;
+}
+.loop-type-badge {
+  display: flex; align-items: center; gap: 6px;
+  border-radius: 6px; padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px;
+}
+.loop-type-badge.R-badge { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+.loop-type-badge.B-badge { background: #f0f9ff; border: 1px solid #7dd3fc; color: #0369a1; }
+.loop-type-badge.P-badge { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; }
+
+@media(max-width:600px) {
+  .topbar { padding: 0 16px; }
+  .wrap { padding: 24px 16px 80px; }
+  .step-title { font-size: 30px; }
+  .brand { font-size: 14px; letter-spacing: 3px; }
+  .sn-item { padding: 6px 10px; font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="apikey-overlay" id="apikeyOverlay">
+  <div class="apikey-modal">
+    <div class="apikey-brand">HD HYUNDAI · WORKSHOP</div>
+    <h2>API 키 입력</h2>
+    <p>Anthropic Claude API를 직접 호출합니다.<br>본인의 API 키를 입력해주세요.</p>
+    <div class="apikey-notice">
+      <strong>🔒 보안 안내</strong><br>
+      키는 이 브라우저에서만 사용되며, "저장" 체크 시 이 기기 localStorage에만 보관됩니다. 서버로 전송되지 않습니다.<br><br>
+      키 발급: <strong>console.anthropic.com</strong> → API Keys
+    </div>
+    <div class="apikey-input-row">
+      <input type="password" id="apikeyInput" placeholder="sk-ant-api03-..." />
+      <button class="apikey-toggle" onclick="toggleKeyVis()" type="button">👁</button>
+    </div>
+    <div class="apikey-save-row">
+      <input type="checkbox" id="saveKey" checked />
+      <label for="saveKey">이 기기에 저장 (새로고침해도 유지)</label>
+    </div>
+    <div class="apikey-err" id="apikeyErr">유효하지 않은 키 형식입니다. sk-ant-로 시작해야 합니다.</div>
+    <button class="apikey-submit" onclick="submitApiKey()">워크숍 시작 →</button>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="brand">HD HYUNDAI · WORKSHOP</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="step-nav">
+      <div class="sn-item active" id="nav1" onclick="navTo(1)"><div class="sn-dot"></div>문제 정의</div>
+      <div class="sn-sep"></div>
+      <div class="sn-item locked" id="nav2" onclick="navTo(2)"><div class="sn-dot"></div>루프 선택</div>
+      <div class="sn-sep"></div>
+      <div class="sn-item locked" id="nav3" onclick="navTo(3)"><div class="sn-dot"></div>리프레이밍</div>
+      <div class="sn-sep"></div>
+      <div class="sn-item locked" id="nav4" onclick="navTo(4)"><div class="sn-dot"></div>AS-IS → TO-BE</div>
+    </div>
+    <button class="btn-apikey" onclick="openApiKeyModal()" title="API 키 변경">🔑</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+<div class="step-panel active" id="step1">
+  <div class="prog-bar"><div class="prog-fill" style="width:25%"></div></div>
+  <div class="step-head">
+    <div class="timer-tag">⏱ 10분</div>
+    <div class="step-eyebrow">STEP 1 / 4</div>
+    <div class="step-title">팀이 가장 잘 아는<br>문제를 정의하세요</div>
+    <div class="step-sub">정답이 없습니다. 반복적으로 겪어온 것, 해결했다고 생각했는데 돌아오는 것을 써주세요.</div>
+  </div>
+  <div class="card">
+    <div class="card-label">📋 현장 문제 입력</div>
+    <div class="field">
+      <div class="f-label"><span class="f-num">1</span> 반복적으로 겪는 핵심 문제를 한 문장으로</div>
+      <input type="text" id="s1_p1" placeholder="예) 이상 징후가 있어도 현장에서 그냥 넘어가고, 결국 큰 고장으로 터진다" />
+    </div>
+    <div class="field">
+      <div class="f-label"><span class="f-num">2</span> 이 문제가 마지막으로 발생했을 때 — 누가, 어디서, 어떤 상황?</div>
+      <textarea id="s1_p2" placeholder="예) 지난달 야간 교대 직전, 도크 3호 선임이 진동 수치 이상을 확인했지만 납기 압박 때문에 보고 안 하고 인계했고, 다음 날 오전에 베어링 파손으로 6시간 공정 중단"></textarea>
+    </div>
+    <div class="field">
+      <div class="f-label"><span class="f-num">3</span> 지금까지 시도해본 해결책과, 왜 효과가 없었는지</div>
+      <textarea id="s1_p3" placeholder="예) 점검 주기 단축 → 납기 때문에 무시됨&#10;전산 이력 관리 도입 → 아무도 안 씀&#10;교육 실시 → 교대 특성상 전달이 안 됨"></textarea>
+    </div>
+    <div class="field">
+      <div class="f-label"><span class="f-num">4</span> 이 문제로 인한 가장 큰 타격</div>
+      <input type="text" id="s1_p4" placeholder="예) 긴급수리 때마다 약 2일치 공정 지연, '어차피 또 터진다'는 체념 분위기" />
+    </div>
+    <button class="btn-primary" onclick="goStep2()">STEP 2 — 인과관계 루프 분석으로 →</button>
+  </div>
+</div>
+
+<div class="step-panel" id="step2">
+  <div class="prog-bar"><div class="prog-fill" style="width:50%"></div></div>
+  <div class="step-head">
+    <div class="timer-tag">⏱ 15분</div>
+    <div class="step-eyebrow">STEP 2 / 4 · 인과관계 루프 선택</div>
+    <div class="step-title">왜 우리는 여기서<br>벗어나지 못하는가?</div>
+    <div class="step-sub">문제를 유지하는 인과관계 루프 3개를 분석했습니다.<br><strong>팀의 문제와 가장 가까운 루프 1개를 선택하세요.</strong></div>
+  </div>
+  <div class="card" style="background:#f0f9ff;border-color:#bae6fd">
+    <div class="card-label">우리 팀의 문제</div>
+    <div id="s2_prob_txt" style="font-size:14px;line-height:1.7;color:var(--text);font-weight:600"></div>
+  </div>
+  <div class="loader-wrap" id="loader2"><div class="spinner"></div><div class="loader-msg" id="lmsg2">인과관계 패턴 분석 중...</div></div>
+  <div class="err-bar" id="err2"></div>
+  <div class="result-wrap" id="res2">
+    <div id="loops_grid"></div>
+    <hr class="divider">
+    <div class="row-btns">
+      <button class="btn-ghost" onclick="regenStep2()">↺ 다시 분석</button>
+      <button class="btn-next" id="btn_s3" disabled onclick="goStep3()">선택한 루프로 리프레이밍 →</button>
+    </div>
+  </div>
+</div>
+
+<div class="step-panel" id="step3">
+  <div class="prog-bar"><div class="prog-fill" style="width:75%"></div></div>
+  <div class="step-head">
+    <div class="timer-tag">⏱ 15분 · ★ 핵심 단계</div>
+    <div class="step-eyebrow">STEP 3 / 4 · 문제 리프레이밍</div>
+    <div class="step-title">당연하다고 생각한 것이<br>함정이다</div>
+    <div class="step-sub">선택한 루프를 기반으로 새로운 시각 3가지를 제시합니다.<br><strong>가장 공감되는 관점 1개를 선택하세요.</strong></div>
+  </div>
+  <div id="s3_loop_badge" class="s4-badge" style="display:none"></div>
+  <div class="loader-wrap" id="loader3"><div class="spinner"></div><div class="loader-msg" id="lmsg3">숨겨진 가정 분석 중...</div></div>
+  <div class="err-bar" id="err3"></div>
+  <div class="result-wrap" id="res3">
+    <div id="reframe_grid"></div>
+    <hr class="divider">
+    <div class="row-btns">
+      <button class="btn-ghost" onclick="regenStep3()">↺ 다시 생성</button>
+      <button class="btn-next" id="btn_s4" disabled onclick="goStep4()">선택한 관점으로 AS-IS → TO-BE →</button>
+    </div>
+  </div>
+</div>
+
+<div class="step-panel" id="step4">
+  <div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div>
+  <div class="step-head">
+    <div class="timer-tag">⏱ 20분</div>
+    <div class="step-eyebrow">STEP 4 / 4 · AS-IS → TO-BE</div>
+    <div class="step-title">같은 문제,<br>다른 접근</div>
+    <div class="step-sub">선택한 리프레이밍을 적용했을 때, 기존 접근과 새로운 접근이 어떻게 달라지는지 비교합니다.</div>
+  </div>
+  <div id="s4_prob_badge" class="s4-badge" style="margin-bottom:10px;background:#f0f9ff;border-color:#bae6fd;display:none">
+    <div class="s4-badge-icon">📋</div>
+    <div><strong style="color:var(--hd-blue);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px">우리 팀의 문제 정의</strong><div id="s4_prob_text" style="font-size:14px;color:var(--text);margin-top:4px;font-weight:600"></div></div>
+  </div>
+  <div id="s4_reframe_badge" class="s4-badge"></div>
+  <div class="loader-wrap" id="loader4"><div class="spinner"></div><div class="loader-msg" id="lmsg4">AS-IS / TO-BE 설계 중...</div></div>
+  <div class="err-bar" id="err4"></div>
+  <div class="result-wrap" id="res4">
+    <div class="card">
+      <div class="card-label">핵심 패러다임 전환</div>
+      <div class="compare-grid">
+        <div class="compare-col asis">
+          <div class="compare-hdr"><span class="compare-hdr-label">AS-IS</span><span class="compare-hdr-title">기존 문제 인식 & 해결 시도</span></div>
+          <div class="compare-body" id="asis_items"></div>
+        </div>
+        <div class="compare-col tobe">
+          <div class="compare-hdr"><span class="compare-hdr-label">TO-BE</span><span class="compare-hdr-title">리프레이밍 적용 후 접근</span></div>
+          <div class="compare-body" id="tobe_items"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">루프별 AS-IS → TO-BE 전환</div>
+      <div style="overflow-x:auto">
+        <table class="loop-compare-table">
+          <thead><tr><th>루프</th><th>AS-IS 진단</th><th>기존 처방 (실패)</th><th>TO-BE 개입점</th></tr></thead>
+          <tbody id="loop_compare_tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div class="card-label" style="margin-bottom:14px">🎯 레버리지 포인트 — 지금 당장 시작할 수 있는 것</div>
+      <div id="leverage_grid"></div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="cld-section" id="cld_card" style="display:none">
+      <div class="card-label">🔄 인과관계 루프 — AS-IS vs TO-BE 시각화</div>
+
+      <div class="cld-row-label asis-label">AS-IS · 현재 악순환</div>
+      <div class="cld-loops-row asis-row" id="cld_asis_row"></div>
+
+      <div class="cld-row-label tobe-label" style="margin-top:30px">TO-BE · 리프레이밍 기반 시스템 원형 3개</div>
+
+      <!-- TO-BE 루프 유형 범례 -->
+      <div class="loop-type-explain">
+        <div class="loop-type-badge R-badge">🔁 R · Reinforcing Loop — 선순환 강화 피드백</div>
+        <div class="loop-type-badge B-badge">⚖️ B · Balancing Loop — 균형·안정화 피드백</div>
+        <div class="loop-type-badge P-badge">📈 P · Plateauing Profits — 성장 한계 돌파</div>
+      </div>
+
+      <div class="cld-loops-row tobe-row" id="cld_tobe_row"></div>
+    </div>
+
+    <hr class="divider">
+    <div class="row-btns"><button class="btn-ghost" onclick="regenStep4()">↺ 전체 다시 생성하기</button></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────
+const S = { prob: {}, loops: null, selected_loop: null, reframings: null, selected_rf: null, result4: null };
+let API_KEY = '';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('hd_workshop_api_key');
+  if (saved) {
+    API_KEY = saved;
+    document.getElementById('apikeyOverlay').classList.add('hidden');
+    document.getElementById('apikeyInput').value = saved;
+  }
+});
+
+function toggleKeyVis() {
+  const inp = document.getElementById('apikeyInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function submitApiKey() {
+  const val = document.getElementById('apikeyInput').value.trim();
+  const err = document.getElementById('apikeyErr');
+  if (!val.startsWith('sk-ant-')) { err.classList.add('on'); return; }
+  err.classList.remove('on');
+  API_KEY = val;
+  if (document.getElementById('saveKey').checked) {
+    localStorage.setItem('hd_workshop_api_key', val);
+  } else {
+    localStorage.removeItem('hd_workshop_api_key');
+  }
+  document.getElementById('apikeyOverlay').classList.add('hidden');
+}
+
+function openApiKeyModal() {
+  document.getElementById('apikeyInput').value = API_KEY;
+  document.getElementById('apikeyOverlay').classList.remove('hidden');
+}
+
+// ─── MSGS ────────────────────────────────────────────
+const MSGS = {
+  2: ['인과관계 패턴 분석 중...','현장 맥락에서 루프 추출 중...','R·B 루프 구조화 중...','악순환 고리 확인 중...'],
+  3: ['숨겨진 가정 분석 중...','프레임의 함정 탐색 중...','다른 눈으로 문제 보는 중...','당연한 것 의심하는 중...'],
+  4: ['AS-IS 패턴 추출 중...','TO-BE R·B·P 루프 설계 중...','레버리지 포인트 탐색 중...','실행 가능한 변화 찾는 중...']
+};
+function cycleMsg(elId, step) {
+  let i = 0;
+  const el = document.getElementById(elId);
+  el.textContent = MSGS[step][0];
+  return setInterval(() => { el.textContent = MSGS[step][++i % MSGS[step].length]; }, 1500);
+}
+
+function navTo(n) {
+  const nav = document.getElementById('nav'+n);
+  if (nav.classList.contains('locked')) return;
+  setStep(n);
+}
+function setStep(n) {
+  [1,2,3,4].forEach(i => {
+    document.getElementById('step'+i).classList.toggle('active', i===n);
+    const nav = document.getElementById('nav'+i);
+    nav.className = 'sn-item' + (i===n ? ' active' : i<n ? ' done' : ' locked');
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ─── STEP 1 ──────────────────────────────────────────
+function goStep2() {
+  const p1 = v('s1_p1');
+  if (!p1) { alert('핵심 문제(1번)를 입력해주세요.'); return; }
+  S.prob = { p1, p2: v('s1_p2'), p3: v('s1_p3'), p4: v('s1_p4') };
+  document.getElementById('s2_prob_txt').textContent = p1;
+  setStep(2);
+  if (!S.loops) runStep2(); else show('res2');
+}
+
+// ─── STEP 2 ──────────────────────────────────────────
+async function regenStep2() {
+  S.loops = null; S.selected_loop = null;
+  document.getElementById('btn_s3').disabled = true;
+  hide('res2'); runStep2();
+}
+
+async function runStep2() {
+  show('loader2'); hide('res2'); hide('err2');
+  const t = cycleMsg('lmsg2', 2);
+  try {
+    const raw = await callClaude(SYS_LOOP, userLoop());
+    clearInterval(t); hide('loader2');
+    const json = parseJSON(raw);
+    S.loops = json;
+    renderLoops(json);
+    show('res2');
+  } catch(e) {
+    clearInterval(t); hide('loader2');
+    showErr('err2', e.message || '루프 분석 오류. 다시 시도해주세요.');
+  }
+}
+
+const SYS_LOOP = `당신은 시스템 사고(Systems Thinking) 전문가이자 HD현대(조선소·해양플랜트) 현장 컨설턴트입니다.
+사용자가 입력한 <현장 문제>를 철저히 분석하여, 이 상황을 심화시키는 핵심 인과관계 루프 3개를 JSON으로만 반환합니다.
+
+중요 규칙:
+1. 일반론을 절대 피하고, 사용자가 입력한 구체적인 내용을 노드 이름과 해석에 적극 반영하세요.
+2. 3가지 다른 관점(작업자, 시스템, 문화 등)에서 다루는 루프를 생성하세요.
+3. 각 루프는 3~5개 노드로 구성, 각 연결에 "+" 또는 "-" 부호 필수.
+
+JSON 포맷:
+{
+  "loops":[{
+    "id":1,
+    "name":"루프명",
+    "type":"R or B",
+    "category":"분석 관점",
+    "nodes":["노드A","노드B","노드C"],
+    "connections":[{"from":"노드A","to":"노드B","sign":"+"}],
+    "interpretation":"왜 발생하는지 구체적 설명"
+  }]
+}`;
+
+function userLoop() {
+  return `<현장 문제>
+1. 핵심 문제: ${S.prob.p1}
+2. 상황: ${S.prob.p2||''}
+3. 시도와 실패: ${S.prob.p3||''}
+4. 체감 타격: ${S.prob.p4||''}
+</현장 문제>`;
+}
+
+function renderLoops(data) {
+  const grid = document.getElementById('loops_grid');
+  grid.innerHTML = '';
+  data.loops.forEach(loop => {
+    const isR = loop.type === 'R';
+    const card = mk('div', `loop-card ${isR?'r-type':'b-type'}`);
+    card.dataset.id = loop.id;
+    card.onclick = () => selectLoop(loop.id, data.loops);
+    const hdr = mk('div','lc-hdr');
+    hdr.innerHTML = `
+      <span class="lc-badge">${loop.type}</span>
+      <span class="lc-title">루프 ${loop.id} — ${loop.name}</span>
+      <span class="lc-cat">${loop.category}</span>
+      <div class="lc-sel-ring"></div>`;
+    card.appendChild(hdr);
+    const body = mk('div','lc-body');
+    const chain = mk('div','lc-chain');
+    loop.connections.forEach((c, i) => {
+      const nd = mk('div','lc-node'); nd.textContent = c.from; chain.appendChild(nd);
+      const arr = mk('div','lc-arr');
+      arr.innerHTML = `<div class="lc-arr-line"></div><div class="lc-arr-sign">${c.sign==='+'?'▶+':'▶−'}</div>`;
+      chain.appendChild(arr);
+      if (i === loop.connections.length-1) {
+        const nd2 = mk('div','lc-node'); nd2.textContent = c.to; chain.appendChild(nd2);
+      }
+    });
+    body.appendChild(chain);
+    const interp = mk('div','lc-interp'); interp.textContent = loop.interpretation;
+    body.appendChild(interp);
+    card.appendChild(body);
+    grid.appendChild(card);
+  });
+}
+
+function selectLoop(id, list) {
+  document.querySelectorAll('.loop-card').forEach(c => c.classList.toggle('selected', +c.dataset.id===id));
+  S.selected_loop = list.find(l => l.id===id);
+  document.getElementById('btn_s3').disabled = false;
+}
+
+// ─── STEP 3 ──────────────────────────────────────────
+function goStep3() {
+  if (!S.selected_loop) return;
+  const badge = document.getElementById('s3_loop_badge');
+  badge.style.display = 'flex';
+  badge.innerHTML = `<div class="s4-badge-icon">🔄</div><div><strong>선택한 루프</strong>루프 ${S.selected_loop.id} — ${S.selected_loop.name}: ${S.selected_loop.interpretation.substring(0,80)}...</div>`;
+  setStep(3);
+  if (!S.reframings) runStep3(); else show('res3');
+}
+
+async function regenStep3() {
+  S.reframings = null; S.selected_rf = null;
+  document.getElementById('btn_s4').disabled = true;
+  hide('res3'); runStep3();
+}
+
+async function runStep3() {
+  show('loader3'); hide('res3'); hide('err3');
+  const t = cycleMsg('lmsg3', 3);
+  try {
+    const raw = await callClaude(SYS_REFRAME, userReframe());
+    clearInterval(t); hide('loader3');
+    const json = parseJSON(raw);
+    S.reframings = json;
+    renderReframings(json);
+    show('res3');
+  } catch(e) {
+    clearInterval(t); hide('loader3');
+    showErr('err3', `오류: ${e.message || '리프레이밍 생성 오류.'} — 다시 시도해주세요.`);
+  }
+}
+
+const SYS_REFRAME = `당신은 문제 해결의 대가(Thomas Wedell-Wedellsborg의 'Reframing' 기법)이자 혁신 컨설턴트입니다.
+Analysis(원인 분석)가 아닌 Reframing(문제 재정의)을 수행하는 3가지 카드를 JSON으로 반환합니다.
+
+중요 규칙:
+1. 6가지 리프레이밍 기법(프레임 밖 보기, 목표 재설정, 거울 보기, 밝은 점 찾기, 타인 관점, 전문성 넘어서기) 중 가장 파괴적인 3가지를 선택.
+2. 현장 상황을 직접 인용하여 현장감 있게 작성.
+
+JSON 포맷:
+{
+  "reframings":[{
+    "id":1,
+    "title":"기법 이름",
+    "hidden_assumption":"무의식적 가정",
+    "new_definition":"💡 재정의: 사실 이것은 ~의 문제다",
+    "how_might_we":"어떻게 하면 ~할 수 있을까?",
+    "pov":"진짜 문제점",
+    "if_true":"과거 해결책 실패 이유"
+  }]
+}`;
+
+function userReframe() {
+  const lp = S.selected_loop;
+  const nodeList = (lp.nodes && lp.nodes.length > 0)
+    ? lp.nodes.join(' → ')
+    : (lp.connections || []).map(c => c.from).join(' → ');
+
+  return `[상황]
+1. 문제: ${S.prob.p1}
+2. 발생 상황: ${S.prob.p2||''}
+3. 기존 실패: ${S.prob.p3||''}
+4. 타격: ${S.prob.p4||''}
+
+[현재 갇힌 프레임]
+- 루프: [${lp.type}] ${lp.name}
+- 핵심 흐름: ${nodeList}
+- 루프 해석: ${lp.interpretation}`;
+}
+
+function renderReframings(data) {
+  const grid = document.getElementById('reframe_grid');
+  grid.innerHTML = '';
+  data.reframings.forEach((rf, idx) => {
+    const card = mk('div','rf-card');
+    card.dataset.id = rf.id;
+    card.onclick = () => selectReframe(rf.id, data.reframings);
+    card.style.animationDelay = (idx*0.07)+'s';
+    card.innerHTML = `
+      <div class="rf-hdr">
+        <div class="rf-num">0${rf.id}</div>
+        <div class="rf-title">${rf.title}</div>
+        <div class="rf-sel-ring"></div>
+      </div>
+      <div class="rf-body">
+        <div class="rf-assumption">기존 가정: <strong>"${rf.hidden_assumption}"</strong></div>
+        <div class="rf-def">${rf.new_definition}</div>
+        ${rf.pov ? `<div class="rf-why" style="margin-bottom:8px"><strong style="color:var(--hd-blue);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;display:block;margin-bottom:3px">POV</strong>${rf.pov}</div>` : ''}
+        <div class="rf-hmw"><span>HMW</span>${rf.how_might_we}</div>
+        <div class="rf-why" style="font-size:11px;color:var(--text3)">→ ${rf.if_true}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function selectReframe(id, list) {
+  document.querySelectorAll('.rf-card').forEach(c => c.classList.toggle('selected', +c.dataset.id===id));
+  S.selected_rf = list.find(r => r.id===id);
+  document.getElementById('btn_s4').disabled = false;
+}
+
+// ─── STEP 4 ──────────────────────────────────────────
+function goStep4() {
+  if (!S.selected_rf) return;
+  const rf = S.selected_rf;
+  // 문제 정의 배지
+  const probBadge = document.getElementById('s4_prob_badge');
+  const probText = document.getElementById('s4_prob_text');
+  if (S.prob.p1) { probText.textContent = S.prob.p1; probBadge.style.display = 'flex'; }
+  // 리프레이밍 배지
+  const badge = document.getElementById('s4_reframe_badge');
+  badge.innerHTML = `<div class="s4-badge-icon">💡</div><div><strong>선택한 리프레이밍</strong>${rf.new_definition}</div>`;
+  setStep(4);
+  if (!S.result4) runStep4(); else show('res4');
+}
+
+async function regenStep4() {
+  S.result4 = null;
+  stopCLDAnimation();
+  document.getElementById('cld_card').style.display = 'none';
+  hide('res4'); hide('err4');
+  runStep4();
+}
+
+async function runStep4() {
+  show('loader4'); hide('res4'); hide('err4');
+  const t = cycleMsg('lmsg4', 4);
+  try {
+    // 호출 A: TO-BE 루프 3개 (R·B·P) 전용 — 토큰 분산
+    document.getElementById('lmsg4').textContent = 'TO-BE R·B·P 루프 설계 중...';
+    const rawA = await callClaude(SYS_S4_LOOPS, userS4());
+    const jsonA = parseJSON(rawA);
+
+    // 호출 B: AS-IS/TO-BE 비교 + 루프별 전환 + 레버리지 포인트
+    document.getElementById('lmsg4').textContent = 'AS-IS → TO-BE 전환 분석 중...';
+    const rawB = await callClaude(SYS_S4_ANALYSIS, userS4());
+    const jsonB = parseJSON(rawB);
+
+    clearInterval(t); hide('loader4');
+
+    // 두 결과 병합
+    const merged = { ...jsonB, tobe_loops: jsonA.tobe_loops || [] };
+    S.result4 = merged;
+    renderStep4(merged);
+    show('res4');
+  } catch(e) {
+    clearInterval(t); hide('loader4');
+    showErr('err4', e.message || 'AS-IS/TO-BE 설계 오류.');
+  }
+}
+
+// ── 호출 A: TO-BE 루프 3개 전용 프롬프트
+const SYS_S4_LOOPS = `당신은 시스템 사고(Systems Thinking) 전문가입니다.
+선택된 리프레이밍 관점을 기반으로 TO-BE 시스템 루프 3개만 JSON으로 반환합니다. 다른 내용 절대 포함 금지.
+
+[절대 규칙]
+- tobe_loops 배열에 정확히 3개: id:1 type:"R", id:2 type:"B", id:3 type:"P"
+- R = Reinforcing Loop: 선순환 강화. 좋은 행동→좋은 결과→더 많은 좋은 행동.
+- B = Balancing Loop: 균형 안정화. 이탈 감지→교정 행동→목표 복귀.
+- P = Plateauing: 구조적 성장 한계 + 그 제약을 돌파하는 개입점.
+- AS-IS 노드명 재사용 금지. 리프레이밍 관점의 긍정적 새 단어로 창조.
+- 각 루프: 노드 4개, 연결 4개.
+- "change": 기존 악순환 가정을 어떻게 깨는지 한 문장.
+
+JSON만 반환:
+{"tobe_loops":[{"id":1,"name":"루프명","type":"R","nodes":["A","B","C","D"],"connections":[{"from":"A","to":"B","sign":"+"},{"from":"B","to":"C","sign":"+"},{"from":"C","to":"D","sign":"+"},{"from":"D","to":"A","sign":"+"}],"change":"설명"},{"id":2,"name":"루프명","type":"B","nodes":["A","B","C","D"],"connections":[{"from":"A","to":"B","sign":"-"},{"from":"B","to":"C","sign":"+"},{"from":"C","to":"D","sign":"+"},{"from":"D","to":"A","sign":"+"}],"change":"설명"},{"id":3,"name":"루프명","type":"P","nodes":["A","B","C","D"],"connections":[{"from":"A","to":"B","sign":"+"},{"from":"B","to":"C","sign":"-"},{"from":"C","to":"D","sign":"+"},{"from":"D","to":"A","sign":"+"}],"change":"설명"}]}`;
+
+// ── 호출 B: AS-IS 비교·루프별 전환·레버리지 포인트 전용 프롬프트
+const SYS_S4_ANALYSIS = `당신은 HD현대 운영 개선 전문가입니다.
+선택된 리프레이밍 관점으로 AS-IS/TO-BE 비교 분석과 레버리지 포인트를 JSON으로만 반환합니다. tobe_loops는 포함하지 마세요.
+
+JSON만 반환:
+{"asis_items":[{"label":"문제 인식 방식","content":"기존 문제 정의"},{"label":"시도한 해결책","content":"왜 실패했나"},{"label":"숨겨진 가정","content":"당연하게 여긴 전제"},{"label":"결과","content":"반복된 악순환"}],"tobe_items":[{"label":"새로운 문제 인식","content":"리프레이밍 후 새 정의"},{"label":"접근 방향","content":"변화 방향"},{"label":"바꿔야 할 가정","content":"버려야 할 전제"},{"label":"기대 결과","content":"루프 변화 예상"}],"loop_compare":[{"loop":"루프명","asis":"AS-IS 진단","failed":"실패 처방","tobe":"TO-BE 개입점"}],"leverage_points":[{"id":1,"icon":"💡","type":"즉시 적용","title":"제목","method":"누가 언제 어떻게","time":"시기","scope":"범위","side_effect":"주의"},{"id":2,"icon":"🔧","type":"단기 과제","title":"제목","method":"누가 언제 어떻게","time":"시기","scope":"범위","side_effect":"주의"},{"id":3,"icon":"🚀","type":"구조 변화","title":"제목","method":"누가 언제 어떻게","time":"시기","scope":"범위","side_effect":"주의"}]}`;
+
+
+function userS4() {
+  const lp = S.selected_loop;
+  const rf = S.selected_rf;
+  const allLoops = S.loops ? S.loops.loops.map(l=>`[${l.type}] ${l.name}: ${l.interpretation}`).join('\n') : '';
+  return `원래 문제: ${S.prob.p1}
+시도한 해결책: ${S.prob.p3||''}
+선택한 루프: [${lp.type}] ${lp.name}
+루프 해석: ${lp.interpretation}
+선택한 리프레이밍 제목: ${rf.title}
+리프레이밍 재정의: ${rf.new_definition}
+HMW 질문: ${rf.how_might_we}
+숨겨진 가정: ${rf.hidden_assumption}
+전체 루프 맥락:\n${allLoops}`;
+}
+
+function renderStep4(data) {
+  const asisEl = document.getElementById('asis_items');
+  asisEl.innerHTML = '';
+  (data.asis_items||[]).forEach(item => {
+    const d = mk('div','compare-item');
+    d.innerHTML = `<div class="compare-item-label">${item.label}</div>${item.content}`;
+    asisEl.appendChild(d);
+  });
+  const tobeEl = document.getElementById('tobe_items');
+  tobeEl.innerHTML = '';
+  (data.tobe_items||[]).forEach(item => {
+    const d = mk('div','compare-item');
+    d.innerHTML = `<div class="compare-item-label">${item.label}</div>${item.content}`;
+    tobeEl.appendChild(d);
+  });
+  const tbody = document.getElementById('loop_compare_tbody');
+  tbody.innerHTML = '';
+  const selName = S.selected_loop ? S.selected_loop.name : '';
+  const allRows = data.loop_compare || [];
+  // 선택한 루프명과 매칭되는 행만 표시, 없으면 첫 번째 행
+  const matchedRows = allRows.filter(row =>
+    selName && (row.loop.includes(selName) || selName.includes(row.loop))
+  );
+  const rowsToShow = matchedRows.length > 0 ? matchedRows : allRows.slice(0, 1);
+  rowsToShow.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${row.loop}</strong></td><td>${row.asis}</td><td class="failed-col">${row.failed}</td><td class="tobe-col">${row.tobe}</td>`;
+    tbody.appendChild(tr);
+  });
+  const lpGrid = document.getElementById('leverage_grid');
+  lpGrid.innerHTML = '';
+  (data.leverage_points||[]).slice(0, 3).forEach((lp, idx) => {
+    const card = mk('div','lp-card');
+    card.style.animationDelay = (idx*0.08)+'s';
+    card.innerHTML = `
+      <div class="lp-hdr">
+        <span class="lp-icon">${lp.icon||'💡'}</span>
+        <div><span class="lp-type">${lp.type}</span><div class="lp-title">${lp.title}</div></div>
+      </div>
+      <div class="lp-body">
+        <div class="lp-method">${lp.method}</div>
+        <div class="lp-meta">
+          <div class="lp-meta-item"><span>⏱</span>${lp.time}</div>
+          <div class="lp-meta-item"><span>🔗</span>${lp.scope}</div>
+        </div>
+        <div class="lp-side"><span>⚠️</span><span>${lp.side_effect}</span></div>
+      </div>`;
+    lpGrid.appendChild(card);
+  });
+
+  // AS-IS: 선택된 루프 1개
+  const asisLoops = S.selected_loop ? [S.selected_loop] : [];
+  // TO-BE: R, B, P 3개 루프
+  const tobeLoops = data.tobe_loops || [];
+
+  if (asisLoops.length > 0) {
+    renderCLD('cld_asis_row', asisLoops, 'asis');
+    renderCLD('cld_tobe_row', tobeLoops, 'tobe');
+    document.getElementById('cld_card').style.display = 'block';
+    startCLDAnimation();
+  }
+}
+
+// ── CAUSAL LOOP DIAGRAM ENGINE ────────────────────────
+let cldTimers = [];
+function stopCLDAnimation() { cldTimers.forEach(t => clearInterval(t)); cldTimers = []; }
+
+function renderCLD(containerId, loops, mode) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  loops.forEach((loop, loopIdx) => {
+    const isTobe = mode === 'tobe';
+    const typeStr = (loop.type || '').trim().toUpperCase();
+    const isR = typeStr === 'R' || typeStr.startsWith('R');
+    const isP = typeStr === 'P' || typeStr.startsWith('P') || typeStr.includes('PLATEAU');
+    const isB = !isR && !isP;
+
+    // 색상 결정
+    let nodeClass, badgeClass, titleClass, strokeColor;
+    if (!isTobe) {
+      nodeClass   = isR ? 'r-node' : 'b-node';
+      badgeClass  = isR ? 'r-badge' : 'b-badge';
+      titleClass  = isR ? 'r-color' : 'b-color';
+      strokeColor = isR ? '#ef4444' : '#0ea5e9';
+    } else {
+      if (isR) {
+        nodeClass = 'tobe-r-node'; badgeClass = 'tobe-r-badge';
+        titleClass = 'tobe-r-color'; strokeColor = '#4ade80';
+      } else if (isP) {
+        nodeClass = 'tobe-p-node'; badgeClass = 'tobe-p-badge';
+        titleClass = 'tobe-p-color'; strokeColor = '#fbbf24';
+      } else {
+        nodeClass = 'tobe-b-node'; badgeClass = 'tobe-b-badge';
+        titleClass = 'tobe-b-color'; strokeColor = '#34d399';
+      }
+    }
+
+    const nodes = loop.nodes || (loop.connections||[]).map(c=>c.from).filter((v,i,a)=>a.indexOf(v)===i);
+    const conns = loop.connections || [];
+    const n = Math.min(nodes.length, 5);
+    if (n < 2) return;
+
+    const wrap = mk('div', 'cld-diagram');
+
+    // 루프 타입 레이블
+    const typeLabel = isP ? 'Plateauing' : (isR ? 'Reinforcing' : 'Balancing');
+    const title = mk('div', `cld-diagram-title ${titleClass}`);
+    title.textContent = `[${typeStr.charAt(0)}] ${loop.name}`;
+    if (loop.change) title.title = loop.change;
+    wrap.appendChild(title);
+
+    // 타입 설명 소배지
+    const typeSub = mk('div', '');
+    typeSub.style.cssText = 'font-size:10px;color:var(--text3);text-align:center;max-width:160px;line-height:1.4;';
+    typeSub.textContent = typeLabel;
+    wrap.appendChild(typeSub);
+
+    const svgWrap = mk('div', 'cld-svg-wrap');
+
+    const badge = mk('div', `cld-center-badge ${badgeClass}`);
+    badge.textContent = isP ? 'P' : (isR ? 'R' : 'B');
+    svgWrap.appendChild(badge);
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 180 180');
+
+    const defs = document.createElementNS(NS, 'defs');
+    const mid = `arr-${mode}-${loopIdx}`;
+    defs.innerHTML = `<marker id="${mid}" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="${strokeColor}" opacity="0.9"/>
+    </marker>`;
+    svg.appendChild(defs);
+
+    const cx = 90, cy = 90, r = 62;
+
+    for (let i = 0; i < n; i++) {
+      const startA = (i / n) * 2 * Math.PI - Math.PI / 2;
+      const endA   = ((i + 1) / n) * 2 * Math.PI - Math.PI / 2;
+      const gap = 0.38;
+      const sA = startA + gap, eA = endA - gap;
+      const sx = cx + r * Math.cos(sA), sy = cy + r * Math.sin(sA);
+      const ex = cx + r * Math.cos(eA), ey = cy + r * Math.sin(eA);
+      const largeArc = (eA - sA > Math.PI) ? 1 : 0;
+
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', `M ${sx} ${sy} A ${r} ${r} 0 ${largeArc} 1 ${ex} ${ey}`);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', strokeColor);
+      path.setAttribute('stroke-width', '2');
+      path.setAttribute('stroke-opacity', '0.7');
+      path.setAttribute('marker-end', `url(#${mid})`);
+      path.setAttribute('data-arc', i);
+      svg.appendChild(path);
+
+      const midA = (startA + endA) / 2;
+      const conn = conns[i];
+      if (conn) {
+        const sign = document.createElementNS(NS, 'text');
+        sign.setAttribute('x', cx + (r + 14) * Math.cos(midA));
+        sign.setAttribute('y', cy + (r + 14) * Math.sin(midA));
+        sign.setAttribute('text-anchor', 'middle');
+        sign.setAttribute('dominant-baseline', 'middle');
+        sign.setAttribute('font-size', '12');
+        sign.setAttribute('font-weight', 'bold');
+        sign.setAttribute('fill', conn.sign === '+' ? '#16a34a' : '#dc2626');
+        sign.textContent = conn.sign === '+' ? '+' : '−';
+        svg.appendChild(sign);
+      }
+    }
+    svgWrap.appendChild(svg);
+
+    const nodeEls = [];
+    for (let i = 0; i < n; i++) {
+      const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+      const nx = 90 + r * Math.cos(angle);
+      const ny = 90 + r * Math.sin(angle);
+      const nd = mk('div', `cld-node-el ${nodeClass}`);
+      nd.textContent = nodes[i];
+      nd.style.left = nx + 'px';
+      nd.style.top  = ny + 'px';
+      svgWrap.appendChild(nd);
+      nodeEls.push(nd);
+    }
+
+    wrap.appendChild(svgWrap);
+
+    // change 설명 (TO-BE만)
+    if (isTobe && loop.change) {
+      const changeEl = mk('div', '');
+      changeEl.style.cssText = 'font-size:11px;color:var(--text2);text-align:center;max-width:160px;line-height:1.5;padding:8px;background:#f8fafc;border-radius:6px;border:1px solid var(--border);';
+      changeEl.textContent = loop.change;
+      wrap.appendChild(changeEl);
+    }
+
+    container.appendChild(wrap);
+    wrap.dataset.nodeCount = n;
+    wrap._nodeEls = nodeEls;
+    wrap._strokeColor = strokeColor;
+    wrap._mode = mode;
+  });
+}
+
+function startCLDAnimation() {
+  stopCLDAnimation();
+  ['cld_asis_row','cld_tobe_row'].forEach(rowId => {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    Array.from(row.querySelectorAll('.cld-diagram')).forEach((wrap, di) => {
+      const nodeEls = wrap._nodeEls;
+      if (!nodeEls || nodeEls.length === 0) return;
+      let idx = 0;
+      const color = wrap._strokeColor;
+      const timer = setInterval(() => {
+        nodeEls.forEach((nd, i) => {
+          if (i === idx) {
+            nd.style.boxShadow = `0 0 0 4px ${color}33, 0 6px 16px rgba(0,0,0,0.1)`;
+            nd.style.borderColor = color;
+          } else {
+            nd.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            nd.style.borderColor = '';
+          }
+        });
+        idx = (idx + 1) % nodeEls.length;
+      }, 700 + di * 150);
+      cldTimers.push(timer);
+    });
+  });
+}
+
+async function callClaude(system, user) {
+  if (!API_KEY) {
+    openApiKeyModal();
+    throw new Error('API 키가 없습니다. 키를 입력해주세요.');
+  }
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 8000,
+      system,
+      messages: [{ role: 'user', content: user }]
+    })
+  });
+  const data = await res.json();
+  if (data.error) {
+    if (data.error.type === 'authentication_error') {
+      localStorage.removeItem('hd_workshop_api_key');
+      openApiKeyModal();
+    }
+    throw new Error(data.error.message);
+  }
+  return data.content.map(b => b.text||'').join('');
+}
+
+function parseJSON(raw) {
+  const m = raw.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error('응답 형식 오류 — 다시 시도해주세요.');
+  let s = m[0];
+  try { return JSON.parse(s); } catch(e) {
+    try {
+      s = s.replace(/,\s*([}\]])/g,'$1').replace(/,\s*$/,'');
+      s = s.replace(/,?\s*"[^"]*$/,'').replace(/,?\s*\{[^}]*$/,'');
+      const ob=(s.match(/\{/g)||[]).length-(s.match(/\}/g)||[]).length;
+      const ab=(s.match(/\[/g)||[]).length-(s.match(/\]/g)||[]).length;
+      for(let i=0;i<ab;i++) s+=']';
+      for(let i=0;i<ob;i++) s+='}';
+      return JSON.parse(s);
+    } catch(e2) { throw new Error('JSON 파싱 오류 — 다시 시도해주세요.'); }
+  }
+}
+
+function mk(tag, cls) { const e = document.createElement(tag); if(cls) e.className=cls; return e; }
+function v(id) { return document.getElementById(id).value.trim(); }
+function show(id) { document.getElementById(id).classList.add('on'); }
+function hide(id) { document.getElementById(id).classList.remove('on'); }
+function showErr(id, msg) { const e=document.getElementById(id); e.textContent=msg; e.classList.add('on'); }
+</script>
+</body>
+</html>
