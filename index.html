@@ -393,8 +393,7 @@ textarea { min-height: 80px; }
     <div class="apikey-notice">
       <strong>🔒 보안 안내</strong><br>
       키는 이 브라우저에서만 사용되며, "저장" 체크 시 이 기기 localStorage에만 보관됩니다. 서버로 전송되지 않습니다.<br><br>
-      키 발급: <strong>console.anthropic.com</strong> → API Keys:
-      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
+      키 발급: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
     </div>
     <div class="apikey-input-row">
       <input type="password" id="apikeyInput" placeholder="sk-ant-api03-..." />
@@ -1174,7 +1173,7 @@ async function callClaude(system, user) {
       'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-5-20250929',
+      model: 'claude-sonnet-4-6',
       max_tokens: 8000,
       system,
       messages: [{ role: 'user', content: user }]
